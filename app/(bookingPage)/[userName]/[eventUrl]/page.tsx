@@ -11,14 +11,14 @@ import { CalendarX2, Clock, VideoIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     userName: string;
     eventUrl: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     date?: string;
     time?: string;
-  };
+  }>;
 }
 
 async function getData(eventUrl: string, userName: string) {
@@ -64,9 +64,11 @@ export default async function BookingFormRoute({
   params,
   searchParams,
 }: PageProps) {
-  const data = await getData(params.eventUrl, params.userName);
-  const selectedDate = searchParams.date
-    ? new Date(searchParams.date)
+  const { eventUrl, userName } = await params;
+  const { date, time } = await searchParams;
+  const data = await getData(eventUrl, userName);
+  const selectedDate = date
+    ? new Date(date)
     : new Date();
 
   const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -75,7 +77,7 @@ export default async function BookingFormRoute({
     month: "long",
   }).format(selectedDate);
 
-  const showForm = !!searchParams.date && !!searchParams.time;
+  const showForm = !!date && !!time;
 
   return (
     <div className="min-h-screen w-screen flex items-center justify-center">
@@ -127,15 +129,15 @@ export default async function BookingFormRoute({
               className="flex flex-col gap-y-4 w-full"
               action={createMeetingAction}
             >
-              <input type="hidden" name="fromTime" value={searchParams.time} />
-              <input type="hidden" name="eventDate" value={searchParams.date} />
+              <input type="hidden" name="fromTime" value={time} />
+              <input type="hidden" name="eventDate" value={date} />
               <input type="hidden" name="meetingLength" value={data.duration} />
               <input
                 type="hidden"
                 name="provider"
                 value={data.videoCallSoftware}
               />
-              <input type="hidden" name="userName" value={params.userName} />
+              <input type="hidden" name="userName" value={userName} />
               <input type="hidden" name="eventTypeId" value={data.id} />
 
               <div className="flex flex-col gap-y-2">
@@ -204,7 +206,7 @@ export default async function BookingFormRoute({
               <TimeTable
                 duration={data.duration}
                 selectedDate={selectedDate}
-                userName={params.userName}
+                userName={userName}
               />
             </div>
           </CardContent>
