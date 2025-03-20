@@ -48,13 +48,16 @@ async function getData(eventUrl: string, userName: string) {
   }
   return data;
 }
+
+interface BookingFormProps {
+  params: { userName: string; eventUrl: string };
+  searchParams: { date?: string; time?: string };
+}
+
 export default async function BookingFormRoute({
   params,
   searchParams,
-}: {
-  params: { userName: string; eventUrl: string };
-  searchParams: { date?: string; time?: string };
-}) {
+}: BookingFormProps) {
   const data = await getData(params.eventUrl, params.userName);
   const SearchParams = searchParams;
   const selectedDate = SearchParams.date
@@ -74,6 +77,7 @@ export default async function BookingFormRoute({
       {showForm ? (
         <Card className="max-w-[600px] w-full">
           <CardContent className="px-5 md:flex justify-between gap-8">
+            {/* Booking Form */}
             <div className="w-full ">
               <img
                 src={data.User?.image as string}
@@ -112,6 +116,7 @@ export default async function BookingFormRoute({
               </div>
             </div>
 
+            {/* Form for Booking */}
             <div className="flex ">
               <Separator orientation="vertical" className="h-full w-[1px]" />
             </div>
@@ -148,6 +153,7 @@ export default async function BookingFormRoute({
       ) : (
         <Card className="w-full max-w-[1000px] mx-auto">
           <CardContent className="px-5 md:flex  justify-between gap-4">
+            {/* Card content for calendar */}
             <div className="w-full">
               <img
                 src={data.User?.image as string}
