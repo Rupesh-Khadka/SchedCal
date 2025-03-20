@@ -10,6 +10,17 @@ import { Separator } from "@/components/ui/separator";
 import { CalendarX2, Clock, VideoIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 
+interface PageProps {
+  params: {
+    userName: string;
+    eventUrl: string;
+  };
+  searchParams: {
+    date?: string;
+    time?: string;
+  };
+}
+
 async function getData(eventUrl: string, userName: string) {
   const data = await prisma.eventType.findFirst({
     where: {
@@ -44,24 +55,18 @@ async function getData(eventUrl: string, userName: string) {
   });
 
   if (!data) {
-    return notFound();
+    notFound();
   }
   return data;
-}
-
-interface BookingFormProps {
-  params: { userName: string; eventUrl: string };
-  searchParams: { date?: string; time?: string };
 }
 
 export default async function BookingFormRoute({
   params,
   searchParams,
-}: BookingFormProps) {
+}: PageProps) {
   const data = await getData(params.eventUrl, params.userName);
-  const SearchParams = searchParams;
-  const selectedDate = SearchParams.date
-    ? new Date(SearchParams.date)
+  const selectedDate = searchParams.date
+    ? new Date(searchParams.date)
     : new Date();
 
   const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -77,11 +82,10 @@ export default async function BookingFormRoute({
       {showForm ? (
         <Card className="max-w-[600px] w-full">
           <CardContent className="px-5 md:flex justify-between gap-8">
-            {/* Booking Form */}
             <div className="w-full ">
               <img
-                src={data.User?.image as string}
-                alt="Profile Image of user"
+                src={data.User?.image || "/default-avatar.png"}
+                alt="Profile"
                 className="size-10 rounded-full"
               />
               <p className="text-sm font-medium text-muted-foreground mt-1">
@@ -116,8 +120,7 @@ export default async function BookingFormRoute({
               </div>
             </div>
 
-            {/* Form for Booking */}
-            <div className="flex ">
+            <div className="flex">
               <Separator orientation="vertical" className="h-full w-[1px]" />
             </div>
             <form
@@ -126,25 +129,27 @@ export default async function BookingFormRoute({
             >
               <input type="hidden" name="fromTime" value={searchParams.time} />
               <input type="hidden" name="eventDate" value={searchParams.date} />
-
               <input type="hidden" name="meetingLength" value={data.duration} />
               <input
                 type="hidden"
                 name="provider"
                 value={data.videoCallSoftware}
               />
-
               <input type="hidden" name="userName" value={params.userName} />
-
               <input type="hidden" name="eventTypeId" value={data.id} />
 
               <div className="flex flex-col gap-y-2">
                 <Label>Your Name</Label>
-                <Input name="name" placeholder="Your Name" />
+                <Input name="name" placeholder="Your Name" required />
               </div>
               <div className="flex flex-col gap-y-2">
                 <Label>Your Email</Label>
-                <Input name="email" placeholder="rupeshkhadkaa@example.com" />
+                <Input
+                  name="email"
+                  type="email"
+                  placeholder="example@domain.com"
+                  required
+                />
               </div>
               <SubmitButton className="w-full mt-5" text="Book Meeting" />
             </form>
@@ -152,12 +157,11 @@ export default async function BookingFormRoute({
         </Card>
       ) : (
         <Card className="w-full max-w-[1000px] mx-auto">
-          <CardContent className="px-5 md:flex  justify-between gap-4">
-            {/* Card content for calendar */}
+          <CardContent className="px-5 md:flex justify-between gap-4">
             <div className="w-full">
               <img
-                src={data.User?.image as string}
-                alt="Profile Image of user"
+                src={data.User?.image || "/default-avatar.png"}
+                alt="Profile"
                 className="size-10 rounded-full"
               />
               <p className="text-sm font-medium text-muted-foreground mt-1">
@@ -193,9 +197,7 @@ export default async function BookingFormRoute({
             </div>
             <div className="flex w-full gap-4">
               <Separator orientation="vertical" className="h-full w-[1px]" />
-
-              <RenderCalendar availability={data.User?.availability as any} />
-
+              <RenderCalendar availability={data.User?.availability || []} />
               <Separator orientation="vertical" className="h-full w-[1px]" />
             </div>
             <div className="w-full">
