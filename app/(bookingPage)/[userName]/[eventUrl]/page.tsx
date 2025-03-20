@@ -55,7 +55,7 @@ export default async function BookingFormRoute({
   params: { userName: string; eventUrl: string };
   searchParams: { date?: string; time?: string };
 }) {
-  const { eventUrl, userName } = await params;
+  const { eventUrl, userName } = params;
   const data = await getData(eventUrl, userName);
   const SearchParams = searchParams;
   const selectedDate = SearchParams.date
