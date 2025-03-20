@@ -55,8 +55,7 @@ export default async function BookingFormRoute({
   params: { userName: string; eventUrl: string };
   searchParams: { date?: string; time?: string };
 }) {
-  const { eventUrl, userName } = params;
-  const data = await getData(eventUrl, userName);
+  const data = await getData(params.eventUrl, params.userName);
   const SearchParams = searchParams;
   const selectedDate = SearchParams.date
     ? new Date(SearchParams.date)
@@ -197,7 +196,7 @@ export default async function BookingFormRoute({
               <TimeTable
                 duration={data.duration}
                 selectedDate={selectedDate}
-                userName={userName}
+                userName={params.userName}
               />
             </div>
           </CardContent>
