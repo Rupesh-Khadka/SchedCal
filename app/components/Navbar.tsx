@@ -10,14 +10,15 @@ export function Navbar() {
       <Link href="/" className="flex items-center gap-2">
         <Image src={Logo} alt="Logo" className="size-10" />
         <h4 className="text-3xl font-semibold">
-        Sched<span className="text-blue-500">Cal</span>
+          Sched<span className="text-blue-500">Cal</span>
         </h4>
       </Link>
 
-      <div className="hidden md:flex md:justify-end md:space-x-4">
+      <div className="md:flex md:justify-end md:space-x-4">
         <ThemeToggle />
-
-        <AuthModal />
+        <div className="hidden md:flex  ">
+          <AuthModal />
+        </div>
       </div>
     </div>
   );
